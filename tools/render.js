@@ -3,7 +3,7 @@
 const path = require('path');
 const fs = require('fs');
 async function render(page) {
-  const viewUrl = path.join(__dirname, '..', `/view/${page}`);
+  const viewUrl = path.join(__dirname, '..', `/views/${page}`);
   return new Promise((reslove, reject) => {
     fs.readFile(viewUrl, (err, data) => {
       if (err) {
