@@ -1,10 +1,10 @@
 const router = require('koa-router')();
 
 const demo = require('./demo');
-const login = require('./user');
+const user = require('./user');
 
-router.use('', demo.routes(), demo.allowedMethods());
-router.use('/user', login.routes(), login.allowedMethods());
+router.use('/demo', demo.routes(), demo.allowedMethods());
+router.use('', user.routes(), user.allowedMethods());
 
 module.exports = router;
 

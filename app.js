@@ -8,9 +8,11 @@ const path = require('path')
 
 const renders = require('./tools/render');
 const routers = require('./routers/index');
+const auth = require('./services/auth')
 
 const app = module.exports = new Koa();
 
+app.use(auth.filter);
 app.use(logger());
 app.use(bodyParser());
 
@@ -26,6 +28,21 @@ app.use(async function (ctx, next) {
     const data = await renders('404.html');
     ctx.body = data;
   }
+});
+
+app.use((ctx, next) => {
+  return next().catch((err) => {
+    if (err.satus === 401) {
+      ctx.status = 401;
+      ctx.body = {
+        code: 401,
+        message: "false",
+        data: {}
+      }
+    } else {
+      throw err;
+    }
+  });
 });
 
 let port = 8080
