@@ -66,11 +66,10 @@ const register = async (ctx) => {
     }
 }
 
-const login = async (ctx) => {
+const userLogin = async (ctx) => {
     const params = ctx.request.query;
     const email = params.email;
     const password = params.password;
-    password = crypto.Hash('')
     let msg = new Msg();
     try {
         const user = await query(`select * from user where email='${email}'`);
@@ -92,6 +91,10 @@ const login = async (ctx) => {
         msg.message = '登录时发生错误';
         ctx.body = msg;
     }
+}
+
+const login = async (ctx) => {
+    await ctx.render('login', {})
 }
 
 module.exports = { getAll, register, login }

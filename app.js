@@ -16,6 +16,9 @@ app.use(auth.filter);
 app.use(logger());
 app.use(bodyParser());
 
+//静态资源配置
+app.use(static(path.join(__dirname, './static')));
+
 app.use(views(path.join(__dirname, './views'), {
   extension: 'ejs'
 }))
