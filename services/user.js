@@ -118,8 +118,20 @@ const login = async (ctx) => {
 
 const testlogin = async (ctx) => {
     let msg = new Msg();
-    msg.code = 0;
-    msg.message = 'success';
+    if (!ctx.session.user) {
+        msg.code = 201;
+        msg.message = '未登录状态';
+        msg.data = {
+            "isLogin": false
+        }
+    } else {
+        msg.code = 0;
+        msg.message = '登录状态';
+        msg.data = {
+            "isLogin": false,
+            "username": ctx.session.user
+        }
+    }
     ctx.body = msg;
 }
 
@@ -168,4 +180,10 @@ const sessionlogin = async (ctx) => {
     }
 }
 
-module.exports = { getAll, register, login, userLogin, sessionlogin };
+const sessionlogout = async (ctx) => {
+    ctx.session = null;
+    ctx.response.redirect('/index');
+}
+
+
+module.exports = { getAll, register, login, userLogin, sessionlogin, testlogin, sessionlogout };
