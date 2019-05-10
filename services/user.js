@@ -3,6 +3,7 @@ const { query } = require('./mysql')
 const Msg = require('./../models/Msg')
 const auth = require('./auth')
 
+
 async function queryAll() {
     let sql = 'select * from user';
     let dataList = await query(sql);
@@ -122,4 +123,49 @@ const testlogin = async (ctx) => {
     ctx.body = msg;
 }
 
-module.exports = { getAll, register, login, userLogin };
+const sessionlogin = async (ctx) => {
+    //query和body 
+    let params = ctx.request.query;
+    if (JSON.stringify(params) === '{}') {
+        params = ctx.request.body;
+    }
+    const username = params.username;
+    const password = params.password;
+    console.log('userLogin:', params);
+
+    let msg = new Msg();
+    try {
+        if (!username || !password) {
+            msg.code = 400;
+            msg.message = 'false';
+            msg.data = { error: `expected an object with username, password but got nothing` };
+            ctx.body = msg;
+            return;
+        }
+        const user = await query(`select * from user where username='${username}'`);
+        if (user.length == 0) {
+            msg.code = 401;
+            msg.message = '用户名错误';
+        } else {
+            if (auth.getHash(password) == user[0].password) {
+                msg.message = '登录成功';
+                ctx.session.user = username;
+                ctx.body = msg;
+            } else {
+                msg.code = 401;
+                msg.message = '密码错误';
+            }
+        }
+        console.log(msg);
+        ctx.body = msg;
+    } catch (error) {
+        console.log('userLogin Error:', error);
+        console.log(msg);
+        msg.code = 401;
+        msg.message = '登录时发生错误';
+        msg.data = { error: error };
+        ctx.body = msg;
+    }
+}
+
+module.exports = { getAll, register, login, userLogin, sessionlogin };

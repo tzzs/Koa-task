@@ -5,6 +5,7 @@ const smb = require('./../services/messageBoard');
 router.post('/index', smb.index);
 router.get('/index', async (ctx) => {
     console.log('index');
+    
     await ctx.render('index', {});
 });
 

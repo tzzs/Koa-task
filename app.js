@@ -5,13 +5,22 @@ const logger = require('koa-logger');
 const static = require('koa-static');
 const views = require('koa-views')
 const path = require('path')
+const session = require('koa-session')
 
 const renders = require('./tools/render');
 const routers = require('./routers/index');
 const auth = require('./services/auth')
 
 const app = module.exports = new Koa();
+app.keys = ['Its a key for koa'];
 
+app.use(session({
+  key: 'koa:sess', /** cookie的名称 */
+  maxAge: 7200000, /** (number) maxAge in ms (default is 1 days)，cookie的过期时间，这里表示2个小时 */
+  overwrite: true, /** (boolean) can overwrite or not (default true) */
+  httpOnly: true, /** (boolean) httpOnly or not (default true) */
+  signed: true, /** (boolean) signed or not (default true) */
+}, app));
 
 // 错误处理
 app.use((ctx, next) => {
@@ -28,7 +37,8 @@ app.use((ctx, next) => {
     }
   })
 });
-app.use(auth.filter);
+
+// app.use(auth.filter);
 app.use(logger());
 app.use(bodyParser());
 
