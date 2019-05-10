@@ -92,7 +92,7 @@
                 type: 'get',
                 url: '/index',
                 beforeSend: function (request) {
-                  request.setRequestHeader("Authorization", data.data.token);
+                  request.setRequestHeader("Authorization", 'Bearer ' + data.data.token);
                 },
                 error: function (data) {
                   layer.alert('页面跳转失败，请重试');
