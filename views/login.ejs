@@ -88,7 +88,16 @@
                 value: data.data.token
               });
               layer.alert(JSON.stringify(data));
-              // window.locattion.href = '/index';
+              $.ajax({
+                type: 'get',
+                url: '/index',
+                beforeSend: function (request) {
+                  request.setRequestHeader("Authorization", data.data.token);
+                },
+                error: function (data) {
+                  layer.alert('页面跳转失败，请重试');
+                }
+              });
             } else {
               layer.alert(data.message);
             }

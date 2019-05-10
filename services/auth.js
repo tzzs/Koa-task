@@ -5,8 +5,10 @@ const crypto = require('crypto');
 const secret = 'secret';
 
 function getToken(payload = {}) {
-    return jwt.sign(payload, secret, { expiresIn: '4h' });
+    return jwt.sign(payload, secret, { expiresIn: '3h' });
 }
+
+
 
 function getJWTPayload(token) {
     return jwt.verify(token.split(' ')[1], secret);
@@ -20,7 +22,7 @@ const filter = jwtKoa({ secret: secret }).unless({
     path: [
         /^\/login/,
         /^\/register/,
-        /^\/index/,
+        // /^\/index/,
         /^\/userlogin/,
         //静态文件
         /.*\w*.js/,

@@ -81,11 +81,10 @@ const userLogin = async (ctx) => {
         if (!username || !password) {
             msg.code = 400;
             msg.message = 'false';
-            msg.data = { error: `expected an object with username, password but got: ${params}` };
+            msg.data = { error: `expected an object with username, password but got nothing`};
             ctx.body = msg;
             return;
         }
-
         const user = await query(`select * from user where username='${username}'`);
         if (user.length == 0) {
             msg.code = 401;
