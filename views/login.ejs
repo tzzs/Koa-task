@@ -79,19 +79,21 @@
         console.log(JSON.stringify(data.field));
         $.ajax({
           type: "post",
-          url: "/userlogin",
+          url: "/sessionlogin",
           // async: "true",
           dataType: "json",
           data: data.field,
           success: function (data) {
             if (data.code == 0) {
-              layui.data('user', {
-                key: 'token',
-                value: data.data.token
-              });
-              // layer.alert(JSON.stringify(data));
-              console.log(JSON.stringify(data));
-              window.location.href = '/index?Authorization=Bearer ' + data.data.token;
+              // layui.data('user', {
+              //   key: 'token',
+              //   value: data.data.token
+              // });
+              // // layer.alert(JSON.stringify(data));
+              // console.log(JSON.stringify(data));
+              // window.location.href = '/index?Authorization=Bearer ' + data.data.token;
+              // return false;
+              window.location.href = '/index';
               return false;
             } else {
               layer.alert(data.message);
