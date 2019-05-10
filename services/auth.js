@@ -21,11 +21,15 @@ const filter = jwtKoa({ secret: secret }).unless({
         /^\/login/,
         /^\/register/,
         /^\/index/,
+        /^\/userlogin/,
+        //静态文件
         /.*\w*.js/,
         /^\/css\/.*/,
+        /^\/js\/.*/,
         /^\/font\/.*/,
         /^\/images\/.*/,
-        /^\/lay\/.*/
+        /^\/lay\/.*/,
+        /.*\w*.ico/
     ]
 });
 

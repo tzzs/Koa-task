@@ -19,10 +19,10 @@ const getAll = async (ctx) => {
 
 const register = async (ctx) => {
     let params = ctx.request.query;
-    let email = params.email;
+    let username = params.username;
 
     //查询当前用户是否存在
-    let sql = `select * from user where email='${email}'`;
+    let sql = `select * from user where username='${username}'`;
     console.log(sql);
     let res = await query(sql);
     // console.log(res);
@@ -33,7 +33,7 @@ const register = async (ctx) => {
             //不存在
             let password = params.password;
 
-            if (!email || !password) {
+            if (!username || !password) {
                 msg.code = 400;
                 msg.message = 'false';
                 msg.data = { error: `expected an object with username, password but got: ${params}` };
@@ -44,13 +44,13 @@ const register = async (ctx) => {
             //密码加密
             password = auth.getHash(password);
             console.log(password);
-            ctx.body = { email: email, password: password };
-            let sql = `INSERT INTO user set email='${email}', password='${password}'`;
+            ctx.body = { username: username, password: password };
+            let sql = `INSERT INTO user set username='${username}', password='${password}'`;
             await query(sql);
 
             msg.code = 0;
             msg.message = 'success';
-            msg.data = { token: auth.getToken({ email: email, password: password }) };
+            msg.data = { token: auth.getToken({ username: username }) };
             ctx.body = msg;
         } catch (error) {
             msg.code = 401;
@@ -67,28 +67,49 @@ const register = async (ctx) => {
 }
 
 const userLogin = async (ctx) => {
-    const params = ctx.request.query;
-    const email = params.email;
+    console.log(ctx.request.body);
+    console.log(ctx.request.query);
+    //query和body 
+    let params = ctx.request.query;
+    if (JSON.stringify(params) === '{}') {
+        params = ctx.request.body;
+    }
+    const username = params.username;
     const password = params.password;
+    console.log('userLogin:', params);
+    // console.log(ctx.request.body);
     let msg = new Msg();
     try {
-        const user = await query(`select * from user where email='${email}'`);
+        if (!username || !password) {
+            msg.code = 400;
+            msg.message = 'false';
+            msg.data = { error: `expected an object with username, password but got: ${params}` };
+            ctx.body = msg;
+            return;
+        }
+
+        const user = await query(`select * from user where username='${username}'`);
         if (user.length == 0) {
             msg.code = 401;
             msg.message = '用户名错误';
-        }
-        console.log(user);
-        if (auth.getHash(password) == user[0].password) {
-            msg.message = '登录成功';
-            msg.data = { token: getToken({ email: email, password: password }) };
         } else {
-            msg.code = 401;
-            msg.message = '密码错误';
+            console.log(user);
+            if (auth.getHash(password) == user[0].password) {
+                msg.message = '登录成功';
+                msg.data = { token: auth.getToken({ username: username }) };
+                // msg.data[token] = auth.getToken({ username: username });
+            } else {
+                msg.code = 401;
+                msg.message = '密码错误';
+            }
         }
         ctx.body = msg;
     } catch (error) {
+        console.log('userLogin Error:', error);
+        console.log(msg);
         msg.code = 401;
         msg.message = '登录时发生错误';
+        msg.data = { error: error };
         ctx.body = msg;
     }
 }
@@ -97,4 +118,4 @@ const login = async (ctx) => {
     await ctx.render('login', {})
 }
 
-module.exports = { getAll, register, login }
+module.exports = { getAll, register, login, userLogin };
