@@ -182,7 +182,10 @@ const sessionlogin = async (ctx) => {
 
 const sessionlogout = async (ctx) => {
     ctx.session = null;
-    ctx.response.redirect('/index');
+    let msg = new Msg();
+    msg.code = 0;
+    msg.message = 'success';
+    ctx.body = msg;
 }
 
 

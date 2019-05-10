@@ -8,8 +8,8 @@ router.post('/userlogin', user.userLogin);
 router.post('/register', user.register);
 router.post('/sessionlogin', user.sessionlogin);
 
-router.get('/testlogin', user.testlogin);
+router.get('/testlogin', user.testlogin);//测试登录接口
 
-router.get('/logout', user.sessionlogout);
+router.get('/logout', user.sessionlogout);//用户退出接口
 
 module.exports = router;
