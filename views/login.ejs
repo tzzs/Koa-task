@@ -88,16 +88,8 @@
                 value: data.data.token
               });
               layer.alert(JSON.stringify(data));
-              $.ajax({
-                type: 'get',
-                url: '/index',
-                beforeSend: function (request) {
-                  request.setRequestHeader("Authorization", 'Bearer ' + data.data.token);
-                },
-                error: function (data) {
-                  layer.alert('页面跳转失败，请重试');
-                }
-              });
+              window.location.href = '/index?Authorization=Bearer ' + data.data.token;
+              return false;
             } else {
               layer.alert(data.message);
             }
