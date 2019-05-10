@@ -67,8 +67,6 @@ const register = async (ctx) => {
 }
 
 const userLogin = async (ctx) => {
-    console.log(ctx.request.body);
-    console.log(ctx.request.query);
     //query和body 
     let params = ctx.request.query;
     if (JSON.stringify(params) === '{}') {
@@ -77,7 +75,7 @@ const userLogin = async (ctx) => {
     const username = params.username;
     const password = params.password;
     console.log('userLogin:', params);
-    // console.log(ctx.request.body);
+
     let msg = new Msg();
     try {
         if (!username || !password) {
@@ -93,16 +91,15 @@ const userLogin = async (ctx) => {
             msg.code = 401;
             msg.message = '用户名错误';
         } else {
-            console.log(user);
             if (auth.getHash(password) == user[0].password) {
                 msg.message = '登录成功';
                 msg.data = { token: auth.getToken({ username: username }) };
-                // msg.data[token] = auth.getToken({ username: username });
             } else {
                 msg.code = 401;
                 msg.message = '密码错误';
             }
         }
+        console.log(msg);
         ctx.body = msg;
     } catch (error) {
         console.log('userLogin Error:', error);
