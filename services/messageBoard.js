@@ -2,7 +2,6 @@ const { query } = require('./mysql');
 const Topic = require('./../models/Topic');
 
 
-
 const index = async (ctx) => {
   await ctx.render('index', {});
 };
@@ -27,7 +26,7 @@ const addtopic = async (ctx) => {
   }).catch(function (err) {
     console.log(object);
   })
-}
+};
 
 const addtest = async (ctx) => {
   let params = ctx.request.query;
@@ -41,6 +40,6 @@ const addtest = async (ctx) => {
     logtime: Date.now()
   });
   console.log('created.' + JSON.stringify(topic));
-}
+};
 
 module.exports = { index, addtopic, addtest };
