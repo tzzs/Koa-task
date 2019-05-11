@@ -3,13 +3,13 @@ const router = require('koa-router')();
 const bodyParser = require('koa-bodyparser');
 const logger = require('koa-logger');
 const static = require('koa-static');
-const views = require('koa-views')
-const path = require('path')
-const session = require('koa-session')
+const views = require('koa-views');
+const path = require('path');
+const session = require('koa-session');
 
 const renders = require('./tools/render');
 const routers = require('./routers/index');
-const auth = require('./services/auth')
+const auth = require('./services/auth');
 
 const app = module.exports = new Koa();
 app.keys = ['Its a key for koa'];
@@ -47,7 +47,7 @@ app.use(static(path.join(__dirname, './static')));
 
 app.use(views(path.join(__dirname, './views'), {
   extension: 'ejs'
-}))
+}));
 
 app.use(async function (ctx, next) {
   await next();
@@ -59,8 +59,8 @@ app.use(async function (ctx, next) {
   }
 });
 
-let port = 8080
+let port = 8080;
 app.use(routers.routes()).use(routers.allowedMethods());
 app.listen(port, () => {
-  console.log(`Sever satrt at 127.0.0.1:${port}`);
+  console.log(`Sever start at 127.0.0.1:${port}`);
 });
