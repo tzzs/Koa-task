@@ -1,14 +1,16 @@
-import Sequelize from "sequelize";
+const {Sequelize, sequelize} = require('./../services/sequelize');
 
-const User = Sequelize.define('user', {
-    id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        primaryKey: true
-    },
-    name: Sequelize.STRING(100)
-    
+const User = sequelize.define('user', {
+  id: {
+    type: Sequelize.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
+  name: Sequelize.STRING(100)
+
 }, {
-        tableName: 'user'
-    });
+  tableName: 'user',
+  timestamp: false
+});
 
+module.exports = User;

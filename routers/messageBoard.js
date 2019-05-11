@@ -13,5 +13,7 @@ router.get('/index', async (ctx) => {
 
 router.get('/', smb.index);
 
+router.get('/addtest', smb.addtest);
+
 
 module.exports = router;
