@@ -73,9 +73,6 @@
 
       //监听提交
       form.on('submit(login)', function (data) {
-        // layer.alert(JSON.stringify(data.field), {
-        //   title: '最终的提交信息'
-        // })
         console.log(JSON.stringify(data.field));
         $.ajax({
           type: "post",
@@ -85,14 +82,6 @@
           data: data.field,
           success: function (data) {
             if (data.code == 0) {
-              // layui.data('user', {
-              //   key: 'token',
-              //   value: data.data.token
-              // });
-              // // layer.alert(JSON.stringify(data));
-              // console.log(JSON.stringify(data));
-              // window.location.href = '/index?Authorization=Bearer ' + data.data.token;
-              // return false;
               window.location.href = '/index';
               return false;
             } else {

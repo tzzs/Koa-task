@@ -164,19 +164,25 @@ const gettopics = async (ctx) => {
   let topic;
   try {
     if (params.author) {
-      topic = await Topic.findAll({
+      topics = await Topic.findAll({
         where: {
           author: params.author,
         },
         order: [['logtime', 'DESC']]
       });
     } else {
-      topic = await Topic.findAll();
+      topics = await Topic.findAll({
+        order: [['logtime', 'DESC']]
+      });
     }
-    console.log(topic.length);
+    topics.forEach(topic => {
+      topic["logtime"] = moment(topic.logtime).format('YYYY-MM-DD HH:mm:ss');
+    });
+    msg.message = 'success';
+    console.log(topics.length);
     msg.data = {
-      count: topic.length,
-      raw: topic
+      count: topics.length,
+      raw: topics
     };
   } catch (error) {
     console.log(error);
