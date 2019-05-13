@@ -28,7 +28,8 @@ const addtopic = async (ctx) => {
       title: params.title,
       content: params.content,
       author: ctx.session.user,
-      logtime: Date.now()
+      // logtime: Date.now()
+      logtime: moment(new Date()).utcOffset(8).format('YYYY-MM-DD HH:mm:ss').toString()
     });
     msg.code = 0;
     msg.message = 'success';
@@ -104,7 +105,6 @@ const modifytopic = async (ctx) => {
   }
   try {
     let topic = await Topic.findOne({ where: { id: params.id } });
-    console.log(topic);
     if (topic.author != ctx.session.user) {
       msg.code = 405;
       msg.message = '请求中的方法被禁止，非作者本人，数据无法修改';
@@ -130,28 +130,24 @@ const modifytopic = async (ctx) => {
 }
 
 const gettopic = async (ctx) => {
-  //判断是否登录
   let msg = new Msg();
-  if (!ctx.session.user) {
-    msg.code = 401;
-    msg.message = '用户未登录,请登录后重试...';
-    ctx.body = msg;
-    return;
-  }
   let params = ctx.request.query;
   if (JSON.stringify(params) === '{}') {
     params = ctx.request.body;
   }
   try {
-    const topic = await Topic.findOne({ where: { id: params.id } });
-    console.log(topic);
+    let topic = await Topic.findOne({ where: { id: params.id } });
     if (topic == null) {
       msg.code = 406;
-      msg.message = '数据不存在，无法删除，请刷新后重试';
+      msg.message = '数据不存在，请刷新后重试';
     } else {
-      await topic.destroy();
+      // topic.logtime = moment(topic.logtime).utcOffset(8).format('YYYY-MM-DD HH:mm:ss');
+      // console.log(topic.logtime);
+      // topic = JSON.stringify(topic);
+      topic["logtime"] = moment(topic.logtime).format('YYYY-MM-DD HH:mm:ss');
       msg.code = 0;
       msg.message = 'success';
+      msg.data = topic;
     }
 
   } catch (error) {

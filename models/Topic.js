@@ -9,7 +9,7 @@ const Topic = sequelize.define('topic', {
   title: Sequelize.STRING(255),
   content: Sequelize.STRING(2000),
   author: Sequelize.STRING(255),
-  logtime: Sequelize.DATE
+  logtime: Sequelize.STRING(255)
 }, {
   timestamp: false//关闭自动添加timeStamp的功能
 });

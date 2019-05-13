@@ -3,7 +3,8 @@ const config = {
     port: 3306,
     user: 'root',
     password: 'root',
-    database: 'koa'
+    database: 'koa',
+    dataStrings: true
 };
 
 module.exports = config;
