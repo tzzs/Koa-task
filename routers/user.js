@@ -16,4 +16,6 @@ router.get('/testlogin', user.testlogin);//测试登录接口
 
 router.get('/logout', user.sessionlogout);//用户退出接口
 
+router.get('/userregister', user.userregister);
+
 module.exports = router;

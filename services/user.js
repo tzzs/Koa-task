@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const {query} = require('./mysql');
+const { query } = require('./mysql');
 const Msg = require('./../models/Msg');
 const auth = require('./auth');
 
@@ -17,8 +17,15 @@ const getAll = async (ctx) => {
   })
 };
 
+const userregister = async (ctx) => {
+  await ctx.render('register', {});
+};
+
 const register = async (ctx) => {
   let params = ctx.request.query;
+  if (JSON.stringify(params) === '{}') {
+    params = ctx.request.body;
+  }
   let username = params.username;
 
   //查询当前用户是否存在
@@ -36,7 +43,7 @@ const register = async (ctx) => {
       if (!username || !password) {
         msg.code = 400;
         msg.message = 'false';
-        msg.data = {error: `expected an object with username, password but got: ${params}`};
+        msg.data = { error: `expected an object with username, password but got: ${params}` };
         ctx.body = msg;
         return;
       }
@@ -44,13 +51,13 @@ const register = async (ctx) => {
       //密码加密
       password = auth.getHash(password);
       console.log(password);
-      ctx.body = {username: username, password: password};
+      ctx.body = { username: username, password: password };
       let sql = `INSERT INTO user set username='${username}', password='${password}'`;
       await query(sql);
 
       msg.code = 0;
       msg.message = 'success';
-      msg.data = {token: auth.getToken({username: username})};
+      msg.data = { token: auth.getToken({ username: username }) };
       ctx.body = msg;
     } catch (error) {
       msg.code = 401;
@@ -61,7 +68,7 @@ const register = async (ctx) => {
     //存在
     msg.code = 401;
     msg.message = "false";
-    msg.data = {data: '用户名已存在'};
+    msg.data = { data: '用户名已存在' };
     ctx.body = msg;
   }
 };
@@ -81,7 +88,7 @@ const userLogin = async (ctx) => {
     if (!username || !password) {
       msg.code = 400;
       msg.message = 'false';
-      msg.data = {error: `expected an object with username, password but got nothing`};
+      msg.data = { error: `expected an object with username, password but got nothing` };
       ctx.body = msg;
       return;
     }
@@ -92,7 +99,7 @@ const userLogin = async (ctx) => {
     } else {
       if (auth.getHash(password) == user[0].password) {
         msg.message = '登录成功';
-        msg.data = {token: auth.getToken({username: username})};
+        msg.data = { token: auth.getToken({ username: username }) };
         ctx.body = msg;
       } else {
         msg.code = 401;
@@ -106,7 +113,7 @@ const userLogin = async (ctx) => {
     console.log(msg);
     msg.code = 401;
     msg.message = '登录时发生错误';
-    msg.data = {error: error};
+    msg.data = { error: error };
     ctx.body = msg;
   }
 };
@@ -149,7 +156,7 @@ const sessionlogin = async (ctx) => {
     if (!username || !password) {
       msg.code = 400;
       msg.message = 'false';
-      msg.data = {error: `expected an object with username, password but got nothing`};
+      msg.data = { error: `expected an object with username, password but got nothing` };
       ctx.body = msg;
       return;
     }
@@ -174,7 +181,7 @@ const sessionlogin = async (ctx) => {
     console.log(msg);
     msg.code = 401;
     msg.message = '登录时发生错误';
-    msg.data = {error: error};
+    msg.data = { error: error };
     ctx.body = msg;
   }
 };
@@ -188,4 +195,4 @@ const sessionlogout = async (ctx) => {
 };
 
 
-module.exports = {getAll, register, login, userLogin, sessionlogin, testlogin, sessionlogout};
+module.exports = { getAll, register, login, userLogin, sessionlogin, testlogin, sessionlogout, userregister };

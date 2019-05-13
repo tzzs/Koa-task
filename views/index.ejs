@@ -17,9 +17,9 @@
 
     </li>
     <li class="layui-nav-item" lay-unselect="" style="float:right">
-      <a href="javascript:;"><img src="//t.cn/RCzsdCq" class="layui-nav-img">我</a>
+      <a href="javascript:;"><img src="//t.cn/RCzsdCq" class="layui-nav-img"></a>
       <dl class="layui-nav-child">
-        <dd><a href="javascript:;">退出登陆</a></dd>
+        <dd><a href="javascript:;" onclick="logout()">退出登陆</a></dd>
       </dl>
     </li>
   </ul>
@@ -89,14 +89,20 @@
           layer.alert('请求时错误');
         }
       });
-    });
-    // function logout() {
-    //   $.ajax({
-    //     type: 'get',
-    //     url: '/logout',
 
-    //   })
-    // }
+    });
+    function logout() {
+      $.ajax({
+        type: 'get',
+        url: '/logout',
+        success: function (data) {
+          window.location.href = '/index';
+        },
+        error: function () {
+
+        }
+      })
+    }
 
   </script>
 
