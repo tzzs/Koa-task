@@ -42,9 +42,9 @@
         <span id="res" style="margin-left:30%;text-align: center;"></span>
         <div class="layui-input-block">
           <div style="float: left;margin-right: 60px">
-            <button class="layui-btn" lay-submit="" lay-filter="login"> 登录</button>
+            <button class="layui-btn" type="button" onclick="window.location.href = '/login'"> 登录</button>
           </div>
-          <button class="layui-btn" lay-submit="" lay-filter="reg" id="reg">注册</button>
+          <button class="layui-btn layui-btn-disabled" lay-submit="" lay-filter="reg" id="reg" disabled='disabled'>注册</button>
         </div>
       </div>
     </form>
@@ -92,10 +92,6 @@
           layedit.sync(editIndex);
         }
       });
-
-      form.on('submit(login)', function () {
-        window.location.href = '/login';
-      })
 
       //监听提交
       form.on('submit(reg)', function (data) {
