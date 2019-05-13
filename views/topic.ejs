@@ -34,24 +34,25 @@
       </ul>
       <div class="layui-tab-content" style="height: 100px;">
         <div class="layui-tab-item layui-show">
-          <div style="margin:0 30px 0 0;">
+          <div style="margin:0 30px 0 0;height: 100%;">
             <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
               <legend>主题发布</legend>
             </fieldset>
 
-            <form class="layui-form" action="" lay-filter="example">
+            <form class="layui-form" action="" lay-filter="example" style="height:100%;width: 80%;margin:6% 8%">
               <div class="layui-form-item">
                 <label class="layui-form-label">Title</label>
                 <div class="layui-input-block">
-                  <input type="text" name="username" lay-verify="title" autocomplete="off" placeholder="请输入标题"
+                  <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入标题"
                     class="layui-input">
                 </div>
               </div>
 
-              <div class="layui-form-item layui-form-text">
+              <div class="layui-form-item layui-form-text" style="height:40%">
                 <label class="layui-form-label">Content</label>
                 <div class="layui-input-block">
-                  <textarea placeholder="请输入内容" class="layui-textarea" name="desc"></textarea>
+                  <textarea placeholder="请输入内容" class="layui-textarea" name="content" cols="20"
+                    style="min-height:200px"></textarea>
                 </div>
               </div>
 
@@ -87,12 +88,32 @@
         layer.msg(elem.text());
       });
 
-      form.on('submit(publish)', function (data) { 
-        
+      form.on('submit(publish)', function (data) {
+        //发布当前主题
+        console.log(JSON.stringify(data.field));
+        $.ajax({
+          type: 'put',
+          url: "/addtopic",
+          success: function (data) {
+            console.log(data);
+            if (data.code == 0) {
+              layer.alert('发布成功');
+            } else if (data.code == 401) {
+              window.location.href = '/login';
+              return false;
+            } else {
+              layer.alert(data.message);
+            }
+          },
+          error: function (data) {
+            layer.alert(data.message);
+          }
+        })
       });
 
 
     });
+
     function logout() {
       $.ajax({
         type: 'get',
