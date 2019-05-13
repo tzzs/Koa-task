@@ -58,13 +58,13 @@ const addtest = async (ctx) => {
 
 const deletetopic = async (ctx) => {
   //判断是否登录
+  let msg = new Msg();
   if (!ctx.session.user) {
     msg.code = 401;
     msg.message = '用户未登录,请登录后重试...';
     ctx.body = msg;
     return;
   }
-  let msg = new Msg();
   let params = ctx.request.query;
   if (JSON.stringify(params) === '{}') {
     params = ctx.request.body;
@@ -72,9 +72,15 @@ const deletetopic = async (ctx) => {
   try {
     const topic = await Topic.findOne({ where: { id: params.id } });
     console.log(topic);
-    await topic.destroy();
-    msg.code = 0;
-    msg.message = 'success';
+    if (topic == null) {
+      msg.code = 406;
+      msg.message = '数据不存在，无法删除，请刷新后重试';
+    } else {
+      await topic.destroy();
+      msg.code = 0;
+      msg.message = 'success';
+    }
+
   } catch (error) {
     console.log(error);
     msg.code = 406;
