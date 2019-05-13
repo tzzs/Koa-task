@@ -56,4 +56,24 @@ const addtest = async (ctx) => {
   console.log('created.' + JSON.stringify(topic));
 };
 
-module.exports = { index, addtopic, addtest };
+const deletetopic = async (ctx) => {
+  let msg = new Msg();
+  let params = ctx.request.query;
+  if (JSON.stringify(params) === '{}') {
+    params = ctx.request.body;
+  }
+  try {
+    const topic = await Topic.findOne({ where: { id: params.id } });
+    console.log(topic);
+    await topic.destroy();
+    msg.code = 0;
+    msg.message = 'success';
+  } catch (error) {
+    console.log(error);
+    msg.code = 406;
+    msg.message = '数据库错误';
+  }
+  ctx.body = msg;
+}
+
+module.exports = { index, addtopic, addtest, deletetopic };

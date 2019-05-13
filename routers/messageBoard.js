@@ -17,5 +17,7 @@ router.get('/addtest', smb.addtest);
 
 router.put('/addtopic', smb.addtopic);
 
+router.delete('/deletetopic', smb.deletetopic);
+
 
 module.exports = router;
