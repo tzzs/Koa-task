@@ -23,8 +23,11 @@ router.post('/modifytopic', smb.modifytopic);
 
 router.get('/gettopic', smb.gettopic);
 
-
 router.get('/gettopics', smb.gettopics);
+
+router.get('/topic', async (ctx) => {
+  await ctx.render('topic', {})
+});
 
 
 module.exports = router;
