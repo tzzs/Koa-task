@@ -15,5 +15,7 @@ router.get('/', smb.index);
 
 router.get('/addtest', smb.addtest);
 
+router.put('/addtopic', smb.addtopic);
+
 
 module.exports = router;
