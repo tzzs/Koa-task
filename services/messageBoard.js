@@ -105,14 +105,53 @@ const modifytopic = async (ctx) => {
   try {
     let topic = await Topic.findOne({ where: { id: params.id } });
     console.log(topic);
+    if (topic.author != ctx.session.user) {
+      msg.code = 405;
+      msg.message = '请求中的方法被禁止，非作者本人，数据无法修改';
+    } else {
+      if (topic == null) {
+        msg.code = 406;
+        msg.message = '数据不存在，无法修改，请刷新后重试';
+      } else {
+        topic = await topic.update({ title: params.title, content: params.title, logtime: Date.now() });
+        msg.code = 0;
+        msg.message = 'success';
+        msg.data = topic;
+      }
+    }
+
+
+  } catch (error) {
+    console.log(error);
+    msg.code = 406;
+    msg.message = '数据库错误';
+  }
+  ctx.body = msg;
+}
+
+const gettopic = async (ctx) => {
+  //判断是否登录
+  let msg = new Msg();
+  if (!ctx.session.user) {
+    msg.code = 401;
+    msg.message = '用户未登录,请登录后重试...';
+    ctx.body = msg;
+    return;
+  }
+  let params = ctx.request.query;
+  if (JSON.stringify(params) === '{}') {
+    params = ctx.request.body;
+  }
+  try {
+    const topic = await Topic.findOne({ where: { id: params.id } });
+    console.log(topic);
     if (topic == null) {
       msg.code = 406;
-      msg.message = '数据不存在，无法修改，请刷新后重试';
+      msg.message = '数据不存在，无法删除，请刷新后重试';
     } else {
-      topic = await topic.update({ title: params.title, content: params.title, logtime: Date.now() });
+      await topic.destroy();
       msg.code = 0;
       msg.message = 'success';
-      msg.data = topic;
     }
 
   } catch (error) {
@@ -123,4 +162,4 @@ const modifytopic = async (ctx) => {
   ctx.body = msg;
 }
 
-module.exports = { index, addtopic, addtest, deletetopic, modifytopic };
+module.exports = { index, addtopic, addtest, deletetopic, modifytopic, gettopic };
