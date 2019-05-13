@@ -19,5 +19,7 @@ router.put('/addtopic', smb.addtopic);
 
 router.delete('/deletetopic', smb.deletetopic);
 
+router.post('/modifytopic', smb.modifytopic);
+
 
 module.exports = router;

@@ -1,7 +1,7 @@
 const { query } = require('./mysql');
 const Topic = require('./../models/Topic');
 const Msg = require('./../models/Msg');
-
+const moment = require('moment');
 
 const index = async (ctx) => {
   await ctx.render('index', {});
@@ -89,4 +89,38 @@ const deletetopic = async (ctx) => {
   ctx.body = msg;
 }
 
-module.exports = { index, addtopic, addtest, deletetopic };
+const modifytopic = async (ctx) => {
+  //判断是否登录
+  let msg = new Msg();
+  if (!ctx.session.user) {
+    msg.code = 401;
+    msg.message = '用户未登录,请登录后重试...';
+    ctx.body = msg;
+    return;
+  }
+  let params = ctx.request.query;
+  if (JSON.stringify(params) === '{}') {
+    params = ctx.request.body;
+  }
+  try {
+    let topic = await Topic.findOne({ where: { id: params.id } });
+    console.log(topic);
+    if (topic == null) {
+      msg.code = 406;
+      msg.message = '数据不存在，无法修改，请刷新后重试';
+    } else {
+      topic = await topic.update({ title: params.title, content: params.title, logtime: Date.now() });
+      msg.code = 0;
+      msg.message = 'success';
+      msg.data = topic;
+    }
+
+  } catch (error) {
+    console.log(error);
+    msg.code = 406;
+    msg.message = '数据库错误';
+  }
+  ctx.body = msg;
+}
+
+module.exports = { index, addtopic, addtest, deletetopic, modifytopic };
