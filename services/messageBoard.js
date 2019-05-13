@@ -57,6 +57,13 @@ const addtest = async (ctx) => {
 };
 
 const deletetopic = async (ctx) => {
+  //判断是否登录
+  if (!ctx.session.user) {
+    msg.code = 401;
+    msg.message = '用户未登录,请登录后重试...';
+    ctx.body = msg;
+    return;
+  }
   let msg = new Msg();
   let params = ctx.request.query;
   if (JSON.stringify(params) === '{}') {
