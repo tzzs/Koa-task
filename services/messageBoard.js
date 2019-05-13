@@ -141,9 +141,6 @@ const gettopic = async (ctx) => {
       msg.code = 406;
       msg.message = '数据不存在，请刷新后重试';
     } else {
-      // topic.logtime = moment(topic.logtime).utcOffset(8).format('YYYY-MM-DD HH:mm:ss');
-      // console.log(topic.logtime);
-      // topic = JSON.stringify(topic);
       topic["logtime"] = moment(topic.logtime).format('YYYY-MM-DD HH:mm:ss');
       msg.code = 0;
       msg.message = 'success';
@@ -158,4 +155,35 @@ const gettopic = async (ctx) => {
   ctx.body = msg;
 }
 
-module.exports = { index, addtopic, addtest, deletetopic, modifytopic, gettopic };
+const gettopics = async (ctx) => {
+  let msg = new Msg();
+  let params = ctx.request.query;
+  if (JSON.stringify(params) === '{}') {
+    params = ctx.request.body;
+  }
+  let topic;
+  try {
+    if (params.author) {
+      topic = await Topic.findAll({
+        where: {
+          author: params.author,
+        },
+        order: [['logtime', 'DESC']]
+      });
+    } else {
+      topic = await Topic.findAll();
+    }
+    console.log(topic.length);
+    msg.data = {
+      count: topic.length,
+      raw: topic
+    };
+  } catch (error) {
+    console.log(error);
+    msg.code = 406;
+    msg.message = '数据库错误';
+  }
+  ctx.body = msg;
+}
+
+module.exports = { index, addtopic, addtest, deletetopic, modifytopic, gettopic, gettopics };

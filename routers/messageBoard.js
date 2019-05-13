@@ -24,4 +24,7 @@ router.post('/modifytopic', smb.modifytopic);
 router.get('/gettopic', smb.gettopic);
 
 
+router.get('/gettopics', smb.gettopics);
+
+
 module.exports = router;
