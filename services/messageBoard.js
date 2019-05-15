@@ -56,6 +56,7 @@ const deletetopic = async (ctx) => {
   if (JSON.stringify(params) === '{}') {
     params = ctx.request.body;
   }
+  console.log(params);
   try {
     const topic = await Topic.findOne({ where: { id: params.id } });
     console.log(topic);
@@ -93,13 +94,13 @@ const modifytopic = async (ctx) => {
     let topic = await Topic.findOne({ where: { id: params.id } });
     if (topic.author != ctx.session.user) {
       msg.code = 405;
-      msg.message = '请求中的方法被禁止，非作者本人，数据无法修改';
+      msg.message = '请求的方法被禁止，非作者本人，数据无法修改';
     } else {
       if (topic == null) {
         msg.code = 406;
         msg.message = '数据不存在，无法修改，请刷新后重试';
       } else {
-        topic = await topic.update({ title: params.title, content: params.title, logtime: Date.now() });
+        topic = await topic.update({ title: params.title, content: params.content, logtime: moment(Date.now()).format('YYYY-MM-DD HH:mm:ss') });
         msg.code = 0;
         msg.message = 'success';
         msg.data = topic;
@@ -175,7 +176,6 @@ const gettopics = async (ctx) => {
       topic["logtime"] = moment(topic.logtime).format('YYYY-MM-DD HH:mm:ss');
     });
     msg.message = 'success';
-    console.log(topics.length);
     msg.data = {
       count: count.length,
       raw: topics

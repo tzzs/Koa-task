@@ -66,17 +66,18 @@
           </div>
         </div>
         <div class="layui-tab-item">
-          <table class="layui-hide" id="test" lay-filter="test"></table>
+          <table class="layui-hide" id="topics" lay-filter="topics"></table>
 
           <script type="text/html" id="toolbar">
             <div class="layui-btn-container">
               <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
               <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
               <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+              <button class="layui-btn layui-btn-sm" lay-event="delete">删除选中</button>
             </div>
           </script>
 
-          <script type="text/html" id="barDemo">
+          <script type="text/html" id="bar">
             <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
             <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
           </script>
@@ -156,13 +157,12 @@
 
       //表格渲染
       table.render({
-        elem: '#test'
+        elem: '#topics'
         , url: '/gettopics'
         , method: 'get'
         , toolbar: '#toolbar'
         , title: '用户数据表'
         , loading: true
-        // , skin: 'line'
         , even: true
         , cols: [[
           { type: 'checkbox', fixed: 'left' }
@@ -171,6 +171,7 @@
           , { field: 'content', title: '内容' }
           , { field: 'author', title: '作者', sort: true }
           , { field: 'logtime', title: '最后修改时间', sort: true }
+          , { fixed: 'right', title: '操作', toolbar: '#bar', width: 150 }
         ]]
         , page: {
           limit: 16,
@@ -187,7 +188,7 @@
       });
 
       //头工具栏事件
-      table.on('toolbar(test)', function (obj) {
+      table.on('toolbar(topics)', function (obj) {
         var checkStatus = table.checkStatus(obj.config.id);
         switch (obj.event) {
           case 'getCheckData':
@@ -201,32 +202,109 @@
           case 'isAll':
             layer.msg(checkStatus.isAll ? '全选' : '未全选');
             break;
+          case 'delete':
+            var data = checkStatus.data;
+            data.forEach(d => {
+              console.log(d);
+              $.ajax({
+                url: '/deletetopic',
+                type: 'delete',
+                data: d.id,
+              })
+            });
         };
       });
 
       //监听行工具事件
-      table.on('tool(test)', function (obj) {
+      table.on('tool(topics)', function (obj) {
         var data = obj.data;
-        //console.log(obj)
         if (obj.event === 'del') {
-          layer.confirm('真的删除行么', function (index) {
-            obj.del();
-            layer.close(index);
-          });
-        } else if (obj.event === 'edit') {
-          layer.prompt({
-            formType: 2
-            , value: data.email
-          }, function (value, index) {
-            obj.update({
-              email: value
+          layer.confirm('确认删除？', function (index) {
+            $.ajax({
+              url: '/deletetopic',
+              type: 'delete',
+              data: { id: data.id },
+              success: function (data) {
+                if (data.code == 0) {
+                  obj.del();
+                  layer.msg('修改完成');
+                } else {
+                  layer.msg(data.message);
+                }
+              },
+              error: function (data) {
+                layer.msg(error);
+              }
             });
             layer.close(index);
           });
+        } else if (obj.event === 'edit') {
+          //弹出层
+          layer.open({
+            title: '修改',
+            anim: 2,
+            area: '500px',
+            btn: [],
+            content: `<form class="layui-form" id="form" action="" lay-filter="editform"
+              style="height:100%;width: 430px">
+              <div class="layui-form-item">
+                <label class="layui-form-label">Title</label>
+                <div class="layui-input-block">
+                  <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入标题"
+                    class="layui-input">
+                </div>
+              </div>
+
+              <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">Content</label>
+                <div class="layui-input-block">
+                  <textarea placeholder="请输入内容" class="layui-textarea" name="content" cols="20"
+                    style="min-height:200px"></textarea>
+                </div>
+              </div>
+
+              <div class="layui-form-item"  style="float:right;padding-right:130px">
+                <div class="layui-input-block">
+                  <button class="layui-btn" lay-submit="" lay-filter="change" onclick="return false;">修改</button>
+                </div>
+              </div>
+            </form>`
+          });
+          //初始化原本数据
+          form.val('editform', {
+            "title": data.title,
+            "content": data.content
+          });
+          //修改提交
+          form.on('submit(change)', function (res) {
+            res = res.field;
+            res['id'] = obj.data.id;
+            $.ajax({
+              type: 'post',
+              url: '/modifytopic',
+              data: res,
+              success: function (data) {
+                console.log(data);
+                if (data.code == 0) {
+                  layer.msg('修改完成');
+                  obj.update({
+                    title: data.data.title,
+                    content: data.data.content,
+                    logtime: data.data.logtime
+                  })
+                } else {
+                  layer.msg(data.message);
+                }
+              },
+              error: function (error) {
+                layer.msg(error);
+              }
+            })
+          });
         }
       });
-    });
 
+    });
 
 
     function logout() {
@@ -239,7 +317,7 @@
         error: function () {
 
         }
-      })
+      });
     }
 
   </script>
