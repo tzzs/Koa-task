@@ -22,8 +22,6 @@
       <a href="javascript:;"><img src="//t.cn/RCzsdCq" class="layui-nav-img"><span id="username"></a>
       <dl class="layui-nav-child">
         <dd id="isLogin">
-          <!-- <div id="isogin"></div> -->
-          <!-- <a href="javascript:;" onclick="logout()">退出登陆</a> -->
         </dd>
       </dl>
     </li>
@@ -95,8 +93,8 @@
   <script>
 
     layui.use(['form', 'layedit', 'laydate', 'element', 'laypage', 'table'], function () {
-      var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
-      var form = layui.form
+      var element = layui.element //导航的hover效果、二级菜单等功能，需要依赖element模块
+        , form = layui.form
         , layer = layui.layer
         , layedit = layui.layedit
         , laydate = layui.laydate
@@ -116,15 +114,6 @@
       element.on('tab(test)', function (elem) {
         location.hash = 'page=' + $(this).attr('lay-id');
       });
-
-      // element.on('tab(test)', function (data) {
-      //   console.log(this); //当前Tab标题所在的原始DOM元素
-      //   console.log(data.index); //得到当前Tab的所在下标
-      //   console.log(data.elem); //得到当前的Tab大容器
-      // });
-
-
-      // element.render('nav');
 
       form.on('submit(publish)', function (data) {
         //发布当前主题
