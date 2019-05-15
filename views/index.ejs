@@ -77,8 +77,9 @@
                   let topic = topics[i];
                   let html = '\
                   <div class="layui-col-xs12 layui-col-sm6 layui-col-md3"><div class="layui-card">\
-                      <div class="layui-card-header">'+ topic.title + '</div>\
-                      <div class="layui-card-body"> '+ topic.content + '<br>Author:' + topic.author + '<br>Time:' + topic.logtime + '</div>\
+                      <div class="layui-card-header">'+ topic.title + '<span style="float:right;">@' + topic.author + '</span></div>\
+                      <div class="layui-card-body" style="padding:10px 15px 0 15px;height:83px"> '+ topic.content + '\
+                      <br><span style="font-size:8px;font-weight:lighter;position:absolute;right:5px;bottom:0;">' + topic.logtime + '</span></div>\
                     </div>\
                   </div>';
                   $('#main').append(html);
