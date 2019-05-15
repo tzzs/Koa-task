@@ -39,7 +39,8 @@
               <legend>主题发布</legend>
             </fieldset>
 
-            <form class="layui-form" id="form" action="" lay-filter="example" style="height:100%;width: 80%;margin:6% 8%">
+            <form class="layui-form" id="form" action="" lay-filter="example"
+              style="height:100%;width: 80%;margin:6% 8%">
               <div class="layui-form-item">
                 <label class="layui-form-label">Title</label>
                 <div class="layui-input-block">
@@ -64,7 +65,22 @@
             </form>
           </div>
         </div>
-        <div class="layui-tab-item">2</div>
+        <div class="layui-tab-item">
+          <table class="layui-hide" id="test" lay-filter="test"></table>
+
+          <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+              <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+              <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+              <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+            </div>
+          </script>
+
+          <script type="text/html" id="barDemo">
+            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+          </script>
+        </div>
       </div>
     </div>
   </div>
@@ -75,13 +91,14 @@
   <script src="/js/jquery-3.4.1.min.js"></script>
   <script>
 
-    layui.use(['form', 'layedit', 'laydate', 'element', 'laypage'], function () {
+    layui.use(['form', 'layedit', 'laydate', 'element', 'laypage', 'table'], function () {
       var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
       var form = layui.form
         , layer = layui.layer
         , layedit = layui.layedit
         , laydate = layui.laydate
-        , laypage = layui.laypage;
+        , laypage = layui.laypage
+        , table = layui.table;
       //监听导航点击
       element.on('nav(demo)', function (elem) {
         //console.log(elem)
@@ -91,41 +108,120 @@
       form.on('submit(publish)', function (data) {
         //发布当前主题
         console.log(JSON.stringify(data.field));
-        $.ajax({
-          type: 'put',
-          url: "/addtopic",
-          async: 'false',
-          success: function (data) {
-            console.log(data);
-            if (data.code == 0) {
-              layer.msg('发布成功', {
-                time: 2000
-              })
-              document.getElementById("form").reset();
-            } else if (data.code == 401) {
-              layer.msg('尚未登录，点击确认后自动跳转登录页面', {
-                time: 0 //不自动关闭
-                , btn: ['确定']
-                , yes: function (index) {
-                  window.location.href = '/login';
-                }
-              });
-            } else {
+        if (data.title == null || data.title == "") {
+          layer.msg('标题不允许为空', {
+            time: 0 //不自动关闭
+            , btn: ['确定']
+            , btnAlign: 'c'
+          });
+        } else {
+          $.ajax({
+            type: 'put',
+            url: "/addtopic",
+            data: data.field,
+            success: function (data) {
+              console.log(data);
+              if (data.code == 0) {
+                layer.msg('发布成功', {
+                  time: 2000
+                })
+                document.getElementById("form").reset();
+              } else if (data.code == 401) {
+                layer.msg('尚未登录，点击确认后自动跳转登录页面', {
+                  time: 0 //不自动关闭
+                  , btn: ['确定']
+                  , btnAlign: 'c'
+                  , yes: function (index) {
+                    window.location.href = '/login';
+                  }
+                });
+              } else {
+                layer.msg(data.message, {
+                  time: 0 //不自动关闭
+                  , btn: ['确定']
+                  , btnAlign: 'c'
+                });
+              }
+            },
+            error: function (data) {
               layer.msg(data.message, {
                 time: 0 //不自动关闭
                 , btn: ['确定']
+                , btnAlign: 'c'
               });
             }
-          },
-          error: function (data) {
-            layer.msg(data.message, {
-              time: 0 //不自动关闭
-              , btn: ['确定']
+          })
+        }
+      });
+
+      //表格渲染
+      table.render({
+        elem: '#test'
+        , url: '/gettopics'
+        , method: 'get'
+        , toolbar: '#toolbar'
+        , title: '用户数据表'
+        , cols: [[
+          { type: 'checkbox', fixed: 'left' }
+          , { field: 'id', title: 'ID', fixed: 'left', unresize: true, sort: true }
+          , { field: 'title', title: '标题' }
+          , { field: 'content', title: '内容' }
+          , { field: 'author', title: '作者', sort: true }
+          , { field: 'logtime', title: '最后修改时间', sort: true }
+        ]]
+        , page: true
+        , parseData: function (res) { //res 即为原始返回的数据
+          return {
+            "code": res.code, //解析接口状态
+            "msg": res.message, //解析提示文本
+            "count": res.data.count, //解析数据长度
+            "data": res.data.raw //解析数据列表
+          };
+        }
+      });
+
+      //头工具栏事件
+      table.on('toolbar(test)', function (obj) {
+        var checkStatus = table.checkStatus(obj.config.id);
+        switch (obj.event) {
+          case 'getCheckData':
+            var data = checkStatus.data;
+            layer.alert(JSON.stringify(data));
+            break;
+          case 'getCheckLength':
+            var data = checkStatus.data;
+            layer.msg('选中了：' + data.length + ' 个');
+            break;
+          case 'isAll':
+            layer.msg(checkStatus.isAll ? '全选' : '未全选');
+            break;
+        };
+      });
+
+      //监听行工具事件
+      table.on('tool(test)', function (obj) {
+        var data = obj.data;
+        //console.log(obj)
+        if (obj.event === 'del') {
+          layer.confirm('真的删除行么', function (index) {
+            obj.del();
+            layer.close(index);
+          });
+        } else if (obj.event === 'edit') {
+          layer.prompt({
+            formType: 2
+            , value: data.email
+          }, function (value, index) {
+            obj.update({
+              email: value
             });
-          }
-        })
+            layer.close(index);
+          });
+        }
       });
     });
+
+
 
     function logout() {
       $.ajax({

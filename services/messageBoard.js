@@ -22,7 +22,7 @@ const addtopic = async (ctx) => {
   if (JSON.stringify(params) === '{}') {
     params = ctx.request.body;
   }
-
+  console.log(params);
   try {
     var topic = await Topic.create({
       title: params.title,
@@ -161,7 +161,7 @@ const gettopics = async (ctx) => {
   if (JSON.stringify(params) === '{}') {
     params = ctx.request.body;
   }
-  let topic;
+  let topics;
   try {
     if (params.author) {
       topics = await Topic.findAll({
