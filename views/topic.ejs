@@ -161,6 +161,9 @@
         , method: 'get'
         , toolbar: '#toolbar'
         , title: '用户数据表'
+        , loading: true
+        // , skin: 'line'
+        , even: true
         , cols: [[
           { type: 'checkbox', fixed: 'left' }
           , { field: 'id', title: 'ID', fixed: 'left', unresize: true, sort: true }
@@ -170,7 +173,8 @@
           , { field: 'logtime', title: '最后修改时间', sort: true }
         ]]
         , page: {
-          limit: 15
+          limit: 16,
+          layout: ['count', 'prev', 'page', 'next', 'skip']
         }
         , parseData: function (res) { //res 即为原始返回的数据
           return {

@@ -148,7 +148,7 @@ const gettopics = async (ctx) => {
     params = ctx.request.body;
   }
   console.log(params);
-  let topics, findparams = {}, where = {};
+  let topics, find = {}, where = {};
   try {
     //判断作者限制
     if (params.author) {
@@ -156,20 +156,20 @@ const gettopics = async (ctx) => {
     }
     //判断页数限制
     if (params.limit) {
-      console.log(params.limit);
-      findparams['limit'] = parseInt(params.limit);
-      console.log(findparams);
+      find['limit'] = parseInt(params.limit);
     }
     //当前页数
     if (params.page) {
-      findparams['offset'] = params.limit * (params.page - 1);
+      find['offset'] = params.limit * (params.page - 1);
     }
 
-    findparams['order'] = [['logtime', 'DESC']];
-    findparams['where'] = where;
+    find['order'] = [['logtime', 'DESC']];
+    find['where'] = where;
 
-    console.log(findparams);
-    topics = await Topic.findAll(findparams);
+    count = await Topic.findAll(where);
+
+    console.log(find);
+    topics = await Topic.findAll(find);
 
     topics.forEach(topic => {
       topic["logtime"] = moment(topic.logtime).format('YYYY-MM-DD HH:mm:ss');
@@ -177,7 +177,7 @@ const gettopics = async (ctx) => {
     msg.message = 'success';
     console.log(topics.length);
     msg.data = {
-      count: topics.length,
+      count: count.length,
       raw: topics
     };
   } catch (error) {
