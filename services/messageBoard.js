@@ -43,20 +43,6 @@ const addtopic = async (ctx) => {
   ctx.body = msg;
 };
 
-const addtest = async (ctx) => {
-  let params = ctx.request.query;
-  if (JSON.stringify(params) === '{}') {
-    params = ctx.request.body;
-  }
-  let topic = await Topic.create({
-    title: params.title,
-    content: params.content,
-    author: 'admin',
-    logtime: Date.now()
-  });
-  console.log('created.' + JSON.stringify(topic));
-};
-
 const deletetopic = async (ctx) => {
   //判断是否登录
   let msg = new Msg();
@@ -161,20 +147,30 @@ const gettopics = async (ctx) => {
   if (JSON.stringify(params) === '{}') {
     params = ctx.request.body;
   }
-  let topics;
+  console.log(params);
+  let topics, findparams = {}, where = {};
   try {
+    //判断作者限制
     if (params.author) {
-      topics = await Topic.findAll({
-        where: {
-          author: params.author,
-        },
-        order: [['logtime', 'DESC']]
-      });
-    } else {
-      topics = await Topic.findAll({
-        order: [['logtime', 'DESC']]
-      });
+      where['author'] = params.author;
     }
+    //判断页数限制
+    if (params.limit) {
+      console.log(params.limit);
+      findparams['limit'] = parseInt(params.limit);
+      console.log(findparams);
+    }
+    //当前页数
+    if (params.page) {
+      findparams['offset'] = params.limit * (params.page - 1);
+    }
+
+    findparams['order'] = [['logtime', 'DESC']];
+    findparams['where'] = where;
+
+    console.log(findparams);
+    topics = await Topic.findAll(findparams);
+
     topics.forEach(topic => {
       topic["logtime"] = moment(topic.logtime).format('YYYY-MM-DD HH:mm:ss');
     });
@@ -192,4 +188,4 @@ const gettopics = async (ctx) => {
   ctx.body = msg;
 }
 
-module.exports = { index, addtopic, addtest, deletetopic, modifytopic, gettopic, gettopics };
+module.exports = { index, addtopic, deletetopic, modifytopic, gettopic, gettopics };

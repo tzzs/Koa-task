@@ -13,8 +13,6 @@ router.get('/index', async (ctx) => {
 
 router.get('/', smb.index);
 
-router.get('/addtest', smb.addtest);
-
 router.put('/addtopic', smb.addtopic);
 
 router.delete('/deletetopic', smb.deletetopic);
