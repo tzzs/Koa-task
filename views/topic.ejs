@@ -39,7 +39,7 @@
               <legend>主题发布</legend>
             </fieldset>
 
-            <form class="layui-form" action="" lay-filter="example" style="height:100%;width: 80%;margin:6% 8%">
+            <form class="layui-form" id="form" action="" lay-filter="example" style="height:100%;width: 80%;margin:6% 8%">
               <div class="layui-form-item">
                 <label class="layui-form-label">Title</label>
                 <div class="layui-input-block">
@@ -58,7 +58,7 @@
 
               <div class="layui-form-item">
                 <div class="layui-input-block">
-                  <button class="layui-btn" lay-submit="" lay-filter="publish">发布</button>
+                  <button class="layui-btn" lay-submit="" lay-filter="publish" onclick="return false;">发布</button>
                 </div>
               </div>
             </form>
@@ -94,24 +94,37 @@
         $.ajax({
           type: 'put',
           url: "/addtopic",
+          async: 'false',
           success: function (data) {
             console.log(data);
             if (data.code == 0) {
-              layer.alert('发布成功');
+              layer.msg('发布成功', {
+                time: 2000
+              })
+              document.getElementById("form").reset();
             } else if (data.code == 401) {
-              window.location.href = '/login';
-              return false;
+              layer.msg('尚未登录，点击确认后自动跳转登录页面', {
+                time: 0 //不自动关闭
+                , btn: ['确定']
+                , yes: function (index) {
+                  window.location.href = '/login';
+                }
+              });
             } else {
-              layer.alert(data.message);
+              layer.msg(data.message, {
+                time: 0 //不自动关闭
+                , btn: ['确定']
+              });
             }
           },
           error: function (data) {
-            layer.alert(data.message);
+            layer.msg(data.message, {
+              time: 0 //不自动关闭
+              , btn: ['确定']
+            });
           }
         })
       });
-
-
     });
 
     function logout() {
