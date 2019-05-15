@@ -125,7 +125,7 @@ const login = async (ctx) => {
 const testlogin = async (ctx) => {
   let msg = new Msg();
   if (!ctx.session.user) {
-    msg.code = 201;
+    msg.code = 0;
     msg.message = '未登录状态';
     msg.data = {
       "isLogin": false
@@ -134,7 +134,7 @@ const testlogin = async (ctx) => {
     msg.code = 0;
     msg.message = '登录状态';
     msg.data = {
-      "isLogin": false,
+      "isLogin": true,
       "username": ctx.session.user
     }
   }

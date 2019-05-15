@@ -20,9 +20,10 @@
       <a href="/topic">Topic<span class=""></span></a>
     </li>
     <li class="layui-nav-item" lay-unselect="" style="float:right">
-      <a href="javascript:;"><img src="//t.cn/RCzsdCq" class="layui-nav-img"></a>
+      <a href="javascript:;"><img src="//t.cn/RCzsdCq" class="layui-nav-img"><span id="username"></span></a>
       <dl class="layui-nav-child">
-        <dd><a href="javascript:;" onclick="logout()">退出登陆</a></dd>
+        <dd id="isLogin">
+        </dd>
       </dl>
     </li>
   </ul>
@@ -107,6 +108,30 @@
       })
     }
 
+    function islogin() {
+      $.ajax({
+        url: '/testlogin',
+        type: 'get',
+        success: function (data) {
+          if (data.code == 0) {
+            if (data.data.isLogin == true) {
+              $('#username').text(data.data.username);
+              $('#isLogin').html(`<a href="javascript:;" onclick="logout()">退出登陆</a>`);
+            } else {
+              $('#isLogin').html(`<a href="/login">登录</a>`);
+              $('#isLogin').append(`<a href="/register">注册</a>`);
+            }
+          } else {
+            layer.msg(data.message);
+          }
+        },
+        error: function (error) {
+          layer.msg(error);
+        }
+      });
+    }
+
+    window.onload = islogin;
   </script>
 
 </body>
