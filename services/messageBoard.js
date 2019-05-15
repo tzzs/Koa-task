@@ -59,16 +59,19 @@ const deletetopic = async (ctx) => {
   console.log(params);
   try {
     const topic = await Topic.findOne({ where: { id: params.id } });
-    console.log(topic);
-    if (topic == null) {
-      msg.code = 406;
-      msg.message = '数据不存在，无法删除，请刷新后重试';
+    if (topic.author == ctx.session.user) {
+      if (topic == null) {
+        msg.code = 406;
+        msg.message = '数据不存在，无法删除，请刷新后重试';
+      } else {
+        await topic.destroy();
+        msg.code = 0;
+        msg.message = 'success';
+      }
     } else {
-      await topic.destroy();
-      msg.code = 0;
-      msg.message = 'success';
+      msg.code = 403;
+      msg.message = '权限不足，禁止删除';
     }
-
   } catch (error) {
     console.log(error);
     msg.code = 406;

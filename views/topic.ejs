@@ -68,7 +68,7 @@
             </form>
           </div>
         </div>
-        <div class="layui-tab-item">
+        <div class="layui-tab-item" lay-filter='manage'>
           <table class="layui-hide" id="topics" lay-filter="topics"></table>
 
           <script type="text/html" id="toolbar">
@@ -109,17 +109,26 @@
       });
 
       //Hash地址的定位
+      //控制tab切换
       var layid = location.hash.replace(/^#page=/, '');
       element.tabChange('test', layid);
-
+      //事件监听
       element.on('tab(test)', function (elem) {
         location.hash = 'page=' + $(this).attr('lay-id');
       });
 
+      // element.on('tab(test)', function (data) {
+      //   console.log(this); //当前Tab标题所在的原始DOM元素
+      //   console.log(data.index); //得到当前Tab的所在下标
+      //   console.log(data.elem); //得到当前的Tab大容器
+      // });
+
+
+      // element.render('nav');
 
       form.on('submit(publish)', function (data) {
         //发布当前主题
-        console.log(JSON.stringify(data.field));
+        // console.log(JSON.stringify(data.field));
         if (data.field.title == null || data.field.title == "") {
           layer.msg('标题不允许为空', {
             time: 0 //不自动关闭
@@ -130,14 +139,15 @@
           $.ajax({
             type: 'put',
             url: "/addtopic",
+            async: 'false',
             data: data.field,
             success: function (data) {
-              console.log(data);
+              // console.log(data);
               if (data.code == 0) {
+                document.getElementById("form").reset();
                 layer.msg('发布成功', {
                   time: 2000
-                })
-                document.getElementById("form").reset();
+                });
               } else if (data.code == 401) {
                 layer.msg('尚未登录，点击确认后自动跳转登录页面', {
                   time: 0 //不自动关闭
@@ -215,7 +225,6 @@
             var data = checkStatus.data;
             console.log(data);
             data.forEach(d => {
-              console.log(d);
               $.ajax({
                 url: '/deletetopic',
                 type: 'delete',
@@ -231,8 +240,11 @@
                 }
               })
             });
-            layer.msg('删除完成');
-            window.location.href = '/topic#page=publish-tab';
+            layer.msg('已删除完成', {
+              icon: 1, time: 1000, end: function () {
+                window.location.reload();
+              }
+            });
         };
       });
 
@@ -362,7 +374,6 @@
         }
       });
     }
-
     window.onload = islogin;
   </script>
 
