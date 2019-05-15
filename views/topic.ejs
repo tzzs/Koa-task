@@ -30,10 +30,10 @@
   </ul>
 
   <div class="container">
-    <div class="layui-tab layui-tab-card" style="height:97%;">
+    <div class="layui-tab layui-tab-card" style="height:97%;" lay-filter='test'>
       <ul class="layui-tab-title">
-        <li class="layui-this">主题发布</li>
-        <li>主题管理</li>
+        <li class="layui-this" lay-id='publish-tab'>主题发布</li>
+        <li lay-id='manage-tab'>主题管理</li>
       </ul>
       <div class="layui-tab-content" style="height: 100px;">
         <div class="layui-tab-item layui-show">
@@ -75,7 +75,6 @@
             <div class="layui-btn-container">
               <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
               <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
-              <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
               <button class="layui-btn layui-btn-sm" lay-event="delete">删除选中</button>
             </div>
           </script>
@@ -109,10 +108,19 @@
         layer.msg(elem.text());
       });
 
+      //Hash地址的定位
+      var layid = location.hash.replace(/^#page=/, '');
+      element.tabChange('test', layid);
+
+      element.on('tab(test)', function (elem) {
+        location.hash = 'page=' + $(this).attr('lay-id');
+      });
+
+
       form.on('submit(publish)', function (data) {
         //发布当前主题
         console.log(JSON.stringify(data.field));
-        if (data.title == null || data.title == "") {
+        if (data.field.title == null || data.field.title == "") {
           layer.msg('标题不允许为空', {
             time: 0 //不自动关闭
             , btn: ['确定']
@@ -202,19 +210,29 @@
             var data = checkStatus.data;
             layer.msg('选中了：' + data.length + ' 个');
             break;
-          case 'isAll':
-            layer.msg(checkStatus.isAll ? '全选' : '未全选');
-            break;
           case 'delete':
+            console.log(checkStatus);
             var data = checkStatus.data;
+            console.log(data);
             data.forEach(d => {
               console.log(d);
               $.ajax({
                 url: '/deletetopic',
                 type: 'delete',
-                data: d.id,
+                data: { id: d.id },
+                success: function (data) {
+                  if (data.code == 0) {
+                  } else {
+                    layer.msg(data.message);
+                  }
+                },
+                error: function (error) {
+                  layer.msg(error);
+                }
               })
             });
+            layer.msg('删除完成');
+            window.location.href = '/topic#page=publish-tab';
         };
       });
 
@@ -230,7 +248,7 @@
               success: function (data) {
                 if (data.code == 0) {
                   obj.del();
-                  layer.msg('修改完成');
+                  layer.msg('删除完成');
                 } else {
                   layer.msg(data.message);
                 }
