@@ -25,12 +25,16 @@ module.exports = config;
 
 ### 运行
 
+会自动创建数据库表，以及插入模拟数据，提供 author0 到 author4 五位用户的登录，密码与账号相同
+
 ```bash
 npm install
 node app.js
 ```
 
 浏览器访问 locahost:8080 或 127.0.0.1:8080
+
+**页面在1920*1080分辨率下显示最佳**
 
 # 页面路由
 
