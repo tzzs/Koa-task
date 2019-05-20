@@ -1,4 +1,5 @@
 const { Sequelize, sequelize } = require('./../services/sequelize');
+const auth = require('./../services/auth');
 
 const User = sequelize.define('user', {
   id: {
@@ -6,8 +7,8 @@ const User = sequelize.define('user', {
     autoIncrement: true,
     primaryKey: true
   },
-  name: Sequelize.STRING(100)
-
+  username: Sequelize.STRING(100),
+  password: Sequelize.STRING
 }, {
     tableName: 'user',
     timestamp: false
@@ -17,7 +18,8 @@ User.sync({ force: true }).then(() => {
   for (let i = 0; i < 5; i++) {
     console.log(i);
     User.create({
-      name: 'autor' + i
+      username: 'author' + i,
+      password: auth.getHash('author' + i)
     });
   }
   return true;
