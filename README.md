@@ -8,12 +8,29 @@
 
 ## 运行
 
+### 配置数据库
+```js
+//  配置文件 /configs/config.js
+const config = {
+    host: 'localhost', //数据库地址
+    port: 3306, //数据库端口
+    user: 'root', //数据库用户
+    password: 'root', //数据库密码
+    database: 'koa', //数据库名称   注：需要手动创建
+    dataStrings: true
+};
+
+module.exports = config;
+```
+
+### 运行
+
 ```bash
 npm install
 node app.js
 ```
 
-
+浏览器访问 locahost:8080 或 127.0.0.1:8080
 
 # 页面路由
 

@@ -10,8 +10,12 @@ const session = require('koa-session');
 const renders = require('./tools/render');
 const routers = require('./routers/index');
 const auth = require('./services/auth');
+const Topic = require('./models/Topic');
+const User = require('./models/User');
 
 const app = module.exports = new Koa();
+
+
 app.keys = ['Its a key for koa'];
 
 app.use(session({

@@ -172,7 +172,6 @@ const gettopics = async (ctx) => {
 
     count = await Topic.findAll(where);
 
-    console.log(find);
     topics = await Topic.findAll(find);
 
     topics.forEach(topic => {
